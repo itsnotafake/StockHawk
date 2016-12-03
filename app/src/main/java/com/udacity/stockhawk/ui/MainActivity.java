@@ -1,9 +1,11 @@
 package com.udacity.stockhawk.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
@@ -25,15 +27,27 @@ import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.PrefUtils;
 import com.udacity.stockhawk.sync.QuoteSyncJob;
 
+import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
+import yahoofinance.Stock;
+import yahoofinance.YahooFinance;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>,
         SwipeRefreshLayout.OnRefreshListener,
         StockAdapter.StockAdapterOnClickHandler {
 
     private static final int STOCK_LOADER = 0;
+    private final ScheduledExecutorService scheduler =
+            Executors.newScheduledThreadPool(1);
+    private String mSymbol;
+    private Context mContext;
+
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
     @BindView(R.id.fab)
@@ -45,8 +59,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private StockAdapter adapter;
 
     @Override
-    public void onClick(String symbol) {
-        Timber.d("Symbol clicked: %s", symbol);
+    public void onClick(String symbol, String[] history) {
+        Intent intent = new Intent(this, ChartActivity.class);
+        intent.putExtra(ChartActivity.CHART_STOCK_SYMBOL, symbol);
+        intent.putExtra(ChartActivity.CHART_STOCK_HISTORY, history);
+        startActivity(intent);
     }
 
     @Override
@@ -55,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        mContext = this;
 
         adapter = new StockAdapter(this, this);
         recyclerView.setAdapter(adapter);
@@ -126,9 +144,33 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 String message = getString(R.string.toast_stock_added_no_connectivity, symbol);
                 Toast.makeText(this, message, Toast.LENGTH_LONG).show();
             }
+            mSymbol = symbol;
+            final Runnable task = new Runnable() {
+                public void run() {
+                    addStockWorker(mSymbol);
+                }
+            };
+            scheduler.schedule(task, 0, TimeUnit.SECONDS);
+        }
+    }
 
-            PrefUtils.addStock(this, symbol);
-            QuoteSyncJob.syncImmediately(this);
+    private void addStockWorker(String symbol){
+        try{
+            Stock s = YahooFinance.get(symbol);
+            if(s != null && s.getQuote() != null && s.getQuote().getPrice() != null) {
+                PrefUtils.addStock(this, symbol);
+                QuoteSyncJob.syncImmediately(mContext);
+            }else{
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        String message = mContext.getString(R.string.main_invalidStock);
+                        Toast.makeText(mContext, message, Toast.LENGTH_LONG).show();
+                    }
+                });
+                QuoteSyncJob.syncImmediately(mContext);
+            }
+        }catch(IOException e){
+            Timber.e(e, mContext.getString(R.string.main_stockFetchError));
         }
     }
 

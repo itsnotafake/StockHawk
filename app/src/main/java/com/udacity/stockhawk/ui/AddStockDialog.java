@@ -17,6 +17,7 @@ import com.udacity.stockhawk.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 
 public class AddStockDialog extends DialogFragment {

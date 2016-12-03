@@ -36,4 +36,24 @@
     <string name="toast_stock_added_no_connectivity">Symbol %s added. Will refresh when network available.</string>
     <string name="toast_no_connectivity">Will refresh when network available.</string>
 
+    <!-- Strings for Main Activity -->
+    <string name="main_label">Stock Quotes</string>
+    <string name="main_invalidStock">Not a valid stock symbol</string>
+    <string name="main_stockFetchError">Error fetching stock quotes</string>
+
+    <!-- Strings for Chart Activity -->
+    <string name="chart_label">Chart</string>
+    <string name="chart_legend_suffix"> Over Time</string>
+    <string name="chart_title_suffix">Price Over Time</string>
+    <string name="chart_xTitle">Time</string>
+    <string name="chart_yTitle">Price in USD</string>
+
+    <!-- Widget -->
+    <string name="widget_stock_list_title">Stock Hawk</string>
+    <string name="widget_stock_list_empty">No stocks in Widget List</string>
+
+    <!-- Content descriptions -->
+    <string name="fab_contentDescription">Add Stock</string>
+    <string name="listItem_contentDescription_prefix">Stock is </string>
+
 </resources>
