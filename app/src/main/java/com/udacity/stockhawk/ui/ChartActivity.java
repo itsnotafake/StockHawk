@@ -58,6 +58,7 @@ public class ChartActivity extends AppCompatActivity {
             }
         };
         scheduler.schedule(task, 0, TimeUnit.SECONDS);
+        //Timber.e(getIntent().getStringArrayExtra(CHART_STOCK_HISTORY).toString());
     }
 
     private void setChart(String[] historyData) {

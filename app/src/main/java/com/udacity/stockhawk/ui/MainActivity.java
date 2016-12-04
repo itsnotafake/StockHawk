@@ -179,7 +179,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         return new CursorLoader(this,
                 Contract.Quote.uri,
                 Contract.Quote.QUOTE_COLUMNS,
-                null, null, Contract.Quote.COLUMN_SYMBOL);
+                null,
+                null,
+                Contract.Quote.COLUMN_SYMBOL);
     }
 
     @Override
