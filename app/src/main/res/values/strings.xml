@@ -40,6 +40,7 @@
     <string name="main_label">Stock Quotes</string>
     <string name="main_invalidStock">Not a valid stock symbol</string>
     <string name="main_stockFetchError">Error fetching stock quotes</string>
+    <string name="main_list_error">Error Message</string>
 
     <!-- Strings for Chart Activity -->
     <string name="chart_label">Chart</string>
@@ -55,5 +56,7 @@
     <!-- Content descriptions -->
     <string name="fab_contentDescription">Add Stock</string>
     <string name="listItem_contentDescription_prefix">Stock is </string>
+
+    <string name="css">CSS</string>
 
 </resources>
